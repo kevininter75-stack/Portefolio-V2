@@ -2,6 +2,7 @@
 
 import RisingLines from "./RisingLines";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsDesktop } from "@/lib/useIsDesktop";
 
 /**
  * Fond décoratif Originkit « Rising Lines » aux couleurs lagon (étincelles menthe
@@ -10,7 +11,9 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
  */
 export default function RisingLinesBackdrop() {
   const reduced = useReducedMotion();
-  if (reduced) return null;
+  const desktop = useIsDesktop();
+  // Pas de canvas animé sur téléphone (batterie/fluidité) ni en reduced-motion.
+  if (reduced || !desktop) return null;
 
   return (
     <div className="absolute inset-0 -z-10 opacity-70" aria-hidden="true">

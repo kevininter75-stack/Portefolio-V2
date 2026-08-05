@@ -2,6 +2,7 @@
 
 import ElectricBorder from "./ElectricBorder";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsDesktop } from "@/lib/useIsDesktop";
 
 /**
  * Encadre un élément vedette d'une bordure « électrique » menthe (Originkit
@@ -10,8 +11,10 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
  */
 export default function ElectricFrame({ children }: { children: React.ReactNode }) {
   const reduced = useReducedMotion();
+  const desktop = useIsDesktop();
 
-  if (reduced) return <>{children}</>;
+  // Sur téléphone / reduced-motion : la carte garde son style, sans canvas animé.
+  if (reduced || !desktop) return <>{children}</>;
 
   return (
     <ElectricBorder

@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import Link from "next/link";
+import { useEffect, useRef, ViewTransition } from "react";
 import { gsap } from "@/lib/gsap";
 import SpotlightCard from "@/components/ui/animations/SpotlightCard";
 import Reveal from "@/components/ui/animations/Reveal";
@@ -55,40 +56,52 @@ export default function ProjectCard({ project, index }: Props) {
         flipped ? "md:[&>*:first-child]:order-2" : ""
       }`}
     >
-      {/* Visuel avec tilt + spotlight */}
+      {/* Visuel avec tilt + spotlight : cliquable, il morphe vers la page projet */}
       <div ref={tiltRef} style={{ transformStyle: "preserve-3d" }}>
-        <SpotlightCard className="p-6" glow={`${project.accent}22`}>
-          <div className={`relative flex justify-center gap-4 ${project.mobile ? "" : "flex-col"}`}>
-            {project.screenshots.map((shot, i) => (
-              <Image
-                key={shot.src}
-                src={shot.src}
-                alt={shot.alt}
-                width={project.mobile ? 300 : 960}
-                height={project.mobile ? 650 : 600}
-                sizes={
-                  project.mobile
-                    ? "(min-width: 768px) 20vw, 40vw"
-                    : "(min-width: 768px) 45vw, 90vw"
-                }
-                className={`rounded-xl border border-ligne shadow-2xl ${
-                  project.mobile
-                    ? `w-[46%] max-w-[240px] ${i === 1 ? "translate-y-6" : ""}`
-                    : i === 1
-                      ? "hidden md:block"
-                      : ""
-                }`}
+        <Link
+          href={`/projets/${project.slug}`}
+          transitionTypes={["nav-forward"]}
+          data-cursor-label="Voir le projet"
+          aria-label={`Voir l'étude de cas du projet ${project.title}`}
+          className="block"
+        >
+          <ViewTransition name={`visuel-${project.slug}`} share="morph">
+            <SpotlightCard className="p-6" glow={`${project.accent}22`}>
+              <div
+                className={`relative flex justify-center gap-4 ${project.mobile ? "" : "flex-col"}`}
+              >
+                {project.screenshots.map((shot, i) => (
+                  <Image
+                    key={shot.src}
+                    src={shot.src}
+                    alt={shot.alt}
+                    width={project.mobile ? 300 : 960}
+                    height={project.mobile ? 650 : 600}
+                    sizes={
+                      project.mobile
+                        ? "(min-width: 768px) 20vw, 40vw"
+                        : "(min-width: 768px) 45vw, 90vw"
+                    }
+                    className={`rounded-xl border border-ligne shadow-2xl ${
+                      project.mobile
+                        ? `w-[46%] max-w-[240px] ${i === 1 ? "translate-y-6" : ""}`
+                        : i === 1
+                          ? "hidden md:block"
+                          : ""
+                    }`}
+                  />
+                ))}
+              </div>
+              <div
+                className="absolute inset-0 -z-10 rounded-2xl opacity-25"
+                style={{
+                  background: `radial-gradient(500px circle at 50% 0%, ${project.accent}, transparent 70%)`,
+                }}
+                aria-hidden
               />
-            ))}
-          </div>
-          <div
-            className="absolute inset-0 -z-10 rounded-2xl opacity-25"
-            style={{
-              background: `radial-gradient(500px circle at 50% 0%, ${project.accent}, transparent 70%)`,
-            }}
-            aria-hidden
-          />
-        </SpotlightCard>
+            </SpotlightCard>
+          </ViewTransition>
+        </Link>
       </div>
 
       {/* Texte */}
@@ -96,9 +109,11 @@ export default function ProjectCard({ project, index }: Props) {
         <p className="font-display text-5xl font-bold" style={{ color: `${project.accent}55` }}>
           {String(index + 1).padStart(2, "0")}
         </p>
-        <h3 className="font-display mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-          {project.title}
-        </h3>
+        <ViewTransition name={`titre-${project.slug}`}>
+          <h3 className="font-display mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+            {project.title}
+          </h3>
+        </ViewTransition>
         <p className="mt-4 max-w-lg leading-relaxed text-brume-60">{project.pitch}</p>
 
         <ul className="mt-5 flex max-w-lg flex-col gap-2">
@@ -124,11 +139,18 @@ export default function ProjectCard({ project, index }: Props) {
         </ul>
 
         <div className="mt-8 flex flex-wrap items-center gap-4">
+          <Link
+            href={`/projets/${project.slug}`}
+            transitionTypes={["nav-forward"]}
+            className="inline-block rounded-full bg-brume px-6 py-3 text-sm font-semibold text-nuit transition-colors hover:bg-menthe"
+          >
+            L&apos;étude de cas →
+          </Link>
           <a
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block rounded-full bg-brume px-6 py-3 text-sm font-semibold text-nuit transition-colors hover:bg-menthe"
+            className="text-sm font-semibold text-brume-60 underline-offset-4 transition-colors hover:text-menthe hover:underline"
           >
             Voir le site ↗
           </a>

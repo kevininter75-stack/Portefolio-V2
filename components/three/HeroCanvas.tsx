@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsDesktop } from "@/lib/useIsDesktop";
 
 // Résultat mémoïsé : on ne teste qu'une seule fois par page pour ne pas
 // créer (et fuiter) un contexte WebGL supplémentaire à chaque montage.
@@ -32,10 +33,14 @@ function supportsWebGL(): boolean {
 export default function HeroCanvas() {
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const [ok, setOk] = useState(false);
+  const desktop = useIsDesktop();
+  const [webgl, setWebgl] = useState(false);
+  // Sur téléphone on ne monte pas la 3D du tout : le dégradé du héros suffit,
+  // et on épargne batterie + CPU des appareils modestes.
+  const ok = webgl && desktop;
 
   useEffect(() => {
-    setOk(supportsWebGL());
+    setWebgl(supportsWebGL());
   }, []);
 
   useEffect(() => {
