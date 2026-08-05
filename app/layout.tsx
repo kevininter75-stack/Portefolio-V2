@@ -6,8 +6,7 @@ import Cursor from "@/components/ui/Cursor";
 import { profile } from "@/lib/data";
 import "./globals.css";
 
-// TODO déploiement : remplacer par l'URL Vercel définitive de la v2.
-const SITE_URL = "https://kevin-intertaglia.vercel.app";
+const SITE_URL = "https://portefolio-v2-five.vercel.app";
 
 // Données structurées schema.org : profil personnel, utile pour le référencement
 const jsonLd = {
