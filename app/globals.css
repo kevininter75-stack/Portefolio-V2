@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+:root {
+  /* Palette « lagon la nuit » — reprise du portfolio v1, poussée un cran plus loin */
+  --nuit: #070a10; /* fond principal, encore plus profond que la v1 */
+  --surface: #0f1520; /* cartes et surfaces relevées */
+  --surface-2: #18202e; /* survols, bordures pleines */
+  --brume: #eaf0f8; /* texte principal */
+  --brume-60: #8a94a6; /* texte secondaire */
+  --menthe: #4fe3c1; /* accent principal — le lagon */
+  --menthe-vif: #6effd8; /* variante lumineuse pour les dégradés */
+  --corail: #ff6b5e; /* accent secondaire — clin d'œil au Bichique */
+  --or: #f2b950; /* touches dorées */
+  --ligne: rgba(232, 237, 245, 0.09); /* traits et séparateurs */
+}
+
+@theme inline {
+  --color-nuit: var(--nuit);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-brume: var(--brume);
+  --color-brume-60: var(--brume-60);
+  --color-menthe: var(--menthe);
+  --color-menthe-vif: var(--menthe-vif);
+  --color-corail: var(--corail);
+  --color-or: var(--or);
+  --color-ligne: var(--ligne);
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--nuit);
+  color: var(--brume);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--menthe);
+  color: var(--nuit);
+}
+
+:focus-visible {
+  outline: 3px solid var(--menthe);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ————————————————————————————————————————————————
+   Utilitaires de design
+   ———————————————————————————————————————————————— */
+
+/* Halos lumineux d'arrière-plan (dégradés radiaux fixes, zéro JS) */
+.halo {
+  background:
+    radial-gradient(600px circle at 15% 20%, rgba(79, 227, 193, 0.10), transparent 60%),
+    radial-gradient(700px circle at 85% 70%, rgba(255, 107, 94, 0.07), transparent 60%);
+}
+
+/* Verre dépoli — cartes translucides sur fond sombre */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid var(--ligne);
+}
+
+/* Texte en dégradé menthe → corail */
+.text-gradient {
+  background: linear-gradient(120deg, var(--menthe-vif), var(--menthe) 40%, var(--corail));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Bordure en dégradé animé (aurora) pour les cartes en vedette */
+.aurora-border {
+  position: relative;
+  isolation: isolate;
+}
+.aurora-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    transparent 0deg,
+    var(--menthe) 90deg,
+    var(--corail) 180deg,
+    transparent 300deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  animation: aurora-spin 6s linear infinite;
+  z-index: -1;
+}
+.aurora-border:hover::before {
+  opacity: 1;
+}
+
+/* Grain léger pour casser les aplats de dégradé (accessibilité : purement décoratif) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes aurora-spin {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Respect strict de prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .aurora-border::before {
+    animation: none;
+  }
+}
